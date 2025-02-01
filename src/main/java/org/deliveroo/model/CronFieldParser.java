@@ -1,9 +1,32 @@
 package org.deliveroo.model;
 
+import org.deliveroo.exception.InvalidFieldFormatException;
+import org.deliveroo.exception.InvalidFieldValueException;
 public class CronFieldParser {
-    private void validateValue(int value) {
+    private final CronField field;
+
+    public CronFieldParser(CronField field) {
+        this.field = field;
     }
+    private void validateValue(int value) {
+        if (value < field.getMin() || value > field.getMax()) {
+            throw new InvalidFieldValueException(
+                    field.getDisplayName(),
+                    String.format("%d (allowed range: %d-%d)", value, field.getMin(), field.getMax())
+            );
+        }
+    }
+
     private void parseStep(String expression, Set<Integer> values) {
+        String[] parts = expression.split("/");
+        if (parts.length != 2) {
+            throw new InvalidFieldFormatException(field.getDisplayName(), expression);
+        }
+
+        int step = Integer.parseInt(parts[1]);
+        if (step <= 0) {
+            throw new InvalidFieldValueException(field.getDisplayName(), "step value must be positive");
+        }
 
         int start = field.getMin();
         int end = field.getMax();
