@@ -1,6 +1,6 @@
 package org.deliveroo;
 
-import org.deliveroo.exception.CronException;
+import org.deliveroo.exception.CronParseException;
 import org.deliveroo.model.CronExpression;
 
 import java.util.Scanner;
@@ -26,7 +26,7 @@ public class Main {
                 CronExpression cron = new CronExpression(input);
                 System.out.println("\nParsed Expression:");
                 System.out.println(cron.format());
-            } catch (CronException e) {
+            } catch (CronParseException e) {
                 System.err.println("Error: " + e.getMessage());
                 System.out.println("\nNeed help? Enter 'h' to show usage information");
             } catch (Exception e) {

@@ -1,8 +1,8 @@
 package org.deliveroo.model;
 
-import org.deliveroo.exception.CronException;
-import org.deliveroo.exception.InvalidFieldValueException;
-import org.deliveroo.exception.InvalidFieldFormatException;
+import org.deliveroo.exception.CronParseException;
+import org.deliveroo.exception.InvalidFieldValueParseException;
+import org.deliveroo.exception.InvalidFieldFormatParseException;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class CronExpression {
     public CronExpression(String cronString) {
         String[] parts = cronString.trim().split("\\s+");
         if (parts.length != 5 && parts.length != 6) {
-            throw new CronException(
+            throw new CronParseException(
                     "Invalid number of fields. Expected 5 or 6 fields, found: " + parts.length +
                             "\nFormat: minute hour day-of-month month day-of-week [command]"
             );
@@ -47,9 +47,9 @@ public class CronExpression {
                 CronFieldParser parser = new CronFieldParser(field);
                 fieldValues.put(field, parser.parse(parts[i++]));
             } catch (NumberFormatException e) {
-                throw new InvalidFieldValueException(field.getDisplayName(), parts[i-1]);
+                throw new InvalidFieldValueParseException(field.getDisplayName(), parts[i-1]);
             } catch (IllegalArgumentException e) {
-                throw new InvalidFieldFormatException(field.getDisplayName(), parts[i-1]);
+                throw new InvalidFieldFormatParseException(field.getDisplayName(), parts[i-1]);
             }
         }
         this.command = parts.length == 6 ? parts[5] : "";

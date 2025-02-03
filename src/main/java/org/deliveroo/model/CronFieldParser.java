@@ -1,7 +1,7 @@
 package org.deliveroo.model;
 
-import org.deliveroo.exception.InvalidFieldFormatException;
-import org.deliveroo.exception.InvalidFieldValueException;
+import org.deliveroo.exception.InvalidFieldFormatParseException;
+import org.deliveroo.exception.InvalidFieldValueParseException;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,7 +15,7 @@ public class CronFieldParser {
 
     public Set<Integer> parse(String expression) {
         if (expression == null || expression.trim().isEmpty()) {
-            throw new InvalidFieldValueException(field.getDisplayName(), "empty value");
+            throw new InvalidFieldValueParseException(field.getDisplayName(), "empty value");
         }
 
         Set<Integer> values = new TreeSet<>();
@@ -41,11 +41,11 @@ public class CronFieldParser {
                 }
             }
         } catch (NumberFormatException e) {
-            throw new InvalidFieldValueException(field.getDisplayName(), expression);
+            throw new InvalidFieldValueParseException(field.getDisplayName(), expression);
         }
 
         if (values.isEmpty()) {
-            throw new InvalidFieldValueException(field.getDisplayName(), expression);
+            throw new InvalidFieldValueParseException(field.getDisplayName(), expression);
         }
 
         return values;
@@ -53,7 +53,7 @@ public class CronFieldParser {
 
     private void validateValue(int value) {
         if (value < field.getMin() || value > field.getMax()) {
-            throw new InvalidFieldValueException(
+            throw new InvalidFieldValueParseException(
                     field.getDisplayName(),
                     String.format("%d (allowed range: %d-%d)", value, field.getMin(), field.getMax())
             );
@@ -63,12 +63,12 @@ public class CronFieldParser {
     private void parseStep(String expression, Set<Integer> values) {
         String[] parts = expression.split("/");
         if (parts.length != 2) {
-            throw new InvalidFieldFormatException(field.getDisplayName(), expression);
+            throw new InvalidFieldFormatParseException(field.getDisplayName(), expression);
         }
 
         int step = Integer.parseInt(parts[1]);
         if (step <= 0) {
-            throw new InvalidFieldValueException(field.getDisplayName(), "step value must be positive");
+            throw new InvalidFieldValueParseException(field.getDisplayName(), "step value must be positive");
         }
 
         int start = field.getMin();
@@ -82,7 +82,7 @@ public class CronFieldParser {
                 validateValue(start);
                 validateValue(end);
                 if (start > end) {
-                    throw new InvalidFieldValueException(field.getDisplayName(), "invalid range: start > end");
+                    throw new InvalidFieldValueParseException(field.getDisplayName(), "invalid range: start > end");
                 }
             } else {
                 start = Integer.parseInt(parts[0]);
@@ -98,7 +98,7 @@ public class CronFieldParser {
     private void parseRange(String expression, Set<Integer> values) {
         String[] parts = expression.split("-");
         if (parts.length != 2) {
-            throw new InvalidFieldFormatException(field.getDisplayName(), expression);
+            throw new InvalidFieldFormatParseException(field.getDisplayName(), expression);
         }
 
         int start = Integer.parseInt(parts[0]);
@@ -108,7 +108,7 @@ public class CronFieldParser {
         validateValue(end);
 
         if (start > end) {
-            throw new InvalidFieldValueException(field.getDisplayName(), "invalid range: start > end");
+            throw new InvalidFieldValueParseException(field.getDisplayName(), "invalid range: start > end");
         }
 
         for (int i = start; i <= end; i++) {
