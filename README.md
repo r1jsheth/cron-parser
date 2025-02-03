@@ -28,17 +28,17 @@ Invalid Examples:
 ```
 
 ## Run Locally
-0. Clone the repo
+### 0. Clone the repo
 
-1. If you have IntelliJ, open this project and simply click on Run button. 
+### 1. If you have IntelliJ, open this project and simply click on Run button. 
 Otherwise, execute following steps to execute from the terminal / command line
 
-2. Create directories for compiled classes
+### 2. Create directories for compiled classes
 ```bash
 mkdir -p target/classes
 ```
 
-3. Compile (from project root directory)
+### 3. Compile (from project root directory)
 ### Windows
 ```commandline
 javac -d target/classes .\src\main\java\org\deliveroo\exception\*.java .\src\main\java\org\deliveroo\model\*.java .\src\main\java\org\deliveroo\service\*.java .\src\main\java\org\deliveroo\*.java
@@ -51,7 +51,7 @@ javac -d target/classes src/main/java/org/deliveroo/exception/*.java \
                         src/main/java/org/deliveroo/Main.java
 ```
 
-4. Run (from project root directory)
+### 4. Run (from project root directory)
 ```bash
 java -cp target/classes org.deliveroo.Main
 ```
