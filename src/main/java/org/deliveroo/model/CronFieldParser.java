@@ -2,12 +2,55 @@ package org.deliveroo.model;
 
 import org.deliveroo.exception.InvalidFieldFormatException;
 import org.deliveroo.exception.InvalidFieldValueException;
+
+import java.util.Set;
+import java.util.TreeSet;
+
 public class CronFieldParser {
     private final CronField field;
 
     public CronFieldParser(CronField field) {
         this.field = field;
     }
+
+    public Set<Integer> parse(String expression) {
+        if (expression == null || expression.trim().isEmpty()) {
+            throw new InvalidFieldValueException(field.getDisplayName(), "empty value");
+        }
+
+        Set<Integer> values = new TreeSet<>();
+
+        try {
+            if (expression.equals("*")) {
+                for (int i = field.getMin(); i <= field.getMax(); i++) {
+                    values.add(i);
+                }
+                return values;
+            }
+
+            String[] parts = expression.split(",");
+            for (String part : parts) {
+                if (part.contains("/")) {
+                    parseStep(part, values);
+                } else if (part.contains("-")) {
+                    parseRange(part, values);
+                } else {
+                    int value = Integer.parseInt(part);
+                    validateValue(value);
+                    values.add(value);
+                }
+            }
+        } catch (NumberFormatException e) {
+            throw new InvalidFieldValueException(field.getDisplayName(), expression);
+        }
+
+        if (values.isEmpty()) {
+            throw new InvalidFieldValueException(field.getDisplayName(), expression);
+        }
+
+        return values;
+    }
+
     private void validateValue(int value) {
         if (value < field.getMin() || value > field.getMax()) {
             throw new InvalidFieldValueException(
