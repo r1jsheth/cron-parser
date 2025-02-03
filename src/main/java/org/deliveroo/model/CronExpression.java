@@ -3,12 +3,14 @@ package org.deliveroo.model;
 import org.deliveroo.exception.CronParseException;
 import org.deliveroo.exception.InvalidFieldValueParseException;
 import org.deliveroo.exception.InvalidFieldFormatParseException;
+import org.deliveroo.service.CronFieldParser;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
 public class CronExpression {
+
     private final Map<CronField, Set<Integer>> fieldValues;
     private final String command;
     private static final String USAGE_INFO = """
@@ -44,7 +46,7 @@ public class CronExpression {
         int i = 0;
         for (CronField field : CronField.values()) {
             try {
-                CronFieldParser parser = new CronFieldParser(field);
+                CronFieldParser parser = CronFieldParser.getInstance().setField(field);
                 fieldValues.put(field, parser.parse(parts[i++]));
             } catch (NumberFormatException e) {
                 throw new InvalidFieldValueParseException(field.getDisplayName(), parts[i-1]);

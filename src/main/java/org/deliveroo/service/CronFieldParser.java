@@ -1,16 +1,34 @@
-package org.deliveroo.model;
+package org.deliveroo.service;
 
 import org.deliveroo.exception.InvalidFieldFormatParseException;
 import org.deliveroo.exception.InvalidFieldValueParseException;
+import org.deliveroo.model.CronField;
 
 import java.util.Set;
 import java.util.TreeSet;
 
 public class CronFieldParser {
-    private final CronField field;
 
-    public CronFieldParser(CronField field) {
+    public static volatile CronFieldParser instance;
+
+    private CronFieldParser() {}
+
+    public static CronFieldParser getInstance() {
+        if (instance == null) {
+            synchronized (CronFieldParser.class) {
+                if (instance == null) {
+                    instance = new CronFieldParser();
+                }
+            }
+        }
+        return  instance;
+    }
+
+    private CronField field;
+
+    public CronFieldParser setField(CronField field) {
         this.field = field;
+        return this;
     }
 
     public Set<Integer> parse(String expression) {
